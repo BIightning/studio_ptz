@@ -1,5 +1,6 @@
 import { XKeys, XKeysWatcher } from "xkeys";
 import XKeysPanel from "./xkeys-panel.class";
+import { Logger } from "../../utils/logger.class";
 
 export default class XKeysPanelManager {
     
@@ -8,12 +9,13 @@ export default class XKeysPanelManager {
     private watcher: XKeysWatcher;
     private panels: XKeysPanel[] = [];
 
-    private constructor() {
+    constructor() {
         if (XKeysPanelManager.instance)
             return XKeysPanelManager.instance;
 
         XKeysPanelManager.instance = this;
         this.watcher = new XKeysWatcher();
+        this.setup();
     }
 
     private setup(): void {
@@ -22,6 +24,7 @@ export default class XKeysPanelManager {
     }
 
     private onConnected(panel: XKeys): void {
+        Logger.info(`XKeys panel connected: ${panel._getDeviceInfo().product}`);
         this.panels.push(new XKeysPanel(panel));
     }
 

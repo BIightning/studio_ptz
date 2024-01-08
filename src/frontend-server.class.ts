@@ -40,8 +40,9 @@ export default class FrontendServer {
     }
 
     public start(): void {
-        this.app.listen(3000, 
-            () => Logger.info(`Frontend server listening on port ${process.env.FRONTEND_SERVER_PORT}`)
+        const port = process.env.FRONTEND_SERVER_PORT;
+        this.app.listen(port, 
+            () => Logger.info(`Frontend server listening on port ${port}`)
         );
     }
 }

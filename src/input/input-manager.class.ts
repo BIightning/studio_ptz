@@ -6,11 +6,12 @@ export default class InputManager {
 
     private xKeysManager: XKeysPanelManager;
     
-    private constructor() {
+    constructor() {
         if (InputManager.instance)
             return InputManager.instance;
 
         InputManager.instance = this;
+        this.xKeysManager = new XKeysPanelManager();
     }
 
 }
