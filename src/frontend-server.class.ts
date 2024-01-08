@@ -1,6 +1,10 @@
 import express from 'express';
 import path from 'path';
+import { Logger } from './utils/logger.class';
 
+/**
+ * Simple Express server to serve a SPA frontend
+ */
 export default class FrontendServer {
 
     private app: express.Application;
@@ -9,23 +13,35 @@ export default class FrontendServer {
         this.app = express();
         this.config();
         this.routes();
+        this.start();
     }
 
+    /**
+     * Serve static files from the dist directory
+     */
     private config(): void {
-        // Serve static files from the Angular app build output directory
-        this.app.use(express.static(path.join(process.cwd(), 'ptz-frontend/dist/browser')));
+        this.app.use(express.static(path.join(
+            process.cwd(), 
+            process.env.FRONTEND_DIST_DIR!
+        )));
     }
 
+    /**
+     * Serve the index.html file for all routes
+     */
     private routes(): void {
-        // We only need to serve index.html from the Angular app for all routes
         this.app.get('*', (req, res) => {
-            res.sendFile(path.join(process.cwd(), 'ptz-frontend/dist/browser/index.html'));
+            res.sendFile(path.join(
+                process.cwd(), 
+                process.env.FRONTEND_DIST_DIR!, 
+                'index.html'
+            ));
         });
     }
 
     public start(): void {
-        this.app.listen(3000, () => {
-            console.log('Server is listening on port 3000');
-        });
+        this.app.listen(3000, 
+            () => Logger.info(`Frontend server listening on port ${process.env.FRONTEND_SERVER_PORT}`)
+        );
     }
 }
