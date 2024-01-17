@@ -1,10 +1,12 @@
 import express from 'express';
 import path from 'path';
 import { Logger } from './utils/logger.class';
+import { singleton,autoInjectable } from 'tsyringe';
 
 /**
  * Simple Express server to serve a SPA frontend
  */
+@autoInjectable()
 export default class FrontendServer {
 
     private app: express.Application;
@@ -41,7 +43,8 @@ export default class FrontendServer {
 
     public start(): void {
         const port = process.env.FRONTEND_SERVER_PORT;
-        this.app.listen(port, 
+        this.app.listen(
+            port, 
             () => Logger.info(`Frontend server listening on port ${port}`)
         );
     }
