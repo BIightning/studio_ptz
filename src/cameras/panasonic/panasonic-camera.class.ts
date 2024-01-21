@@ -7,6 +7,7 @@ export class PanasonicCamera extends Camera {
         return new PanasonicCamera(
             camera.id, 
             camera.name, 
+            'PANASONIC',
             camera.ip, 
             camera.port
         );

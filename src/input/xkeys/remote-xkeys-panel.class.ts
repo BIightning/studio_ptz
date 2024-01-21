@@ -35,8 +35,8 @@ export default class RemoteXKeysPanel {
         this.inputManager.onXKeysKeyUp(keyIndex);
     }
 
-    public triggerJoystick(joystickIndex: number, value: { x: number, y: number, z: number, deltaZ: number }) {
-        this.inputManager.onXKeysJoystick(joystickIndex, value);
+    public triggerJoystick(value: { x: number, y: number, z: number, deltaZ: number }) {
+        this.inputManager.onXKeysJoystick(value);
     }
 
 }

@@ -1,0 +1,14 @@
+<div class="wrapper">
+
+    @if(bXkeysConnected) {
+        <div class="container">
+            <img class="connected" src="assets/images/xk-12.png" alt="Connected">
+            <h4 class="connected-text"> {{deviceInfo?.product}}</h4>
+        </div>
+    }
+
+    @else {
+        <button class="connect-btn" (click)="connect()">Connect</button>
+    }
+
+</div>

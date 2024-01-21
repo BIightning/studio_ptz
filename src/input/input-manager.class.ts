@@ -4,9 +4,9 @@ import { Logger } from "../utils/logger.class";
 import { XKeysJoystickValue } from "./xkeys/interfaces/xkeys-joystick-value.interface";
 
 type KeyCallback = () => void;
-type JoystickCallback = (joystickIndex: number, value: XKeysJoystickValue) => void;
+type JoystickCallback = (value: XKeysJoystickValue) => void;
 
-@autoInjectable()
+
 export default class InputManager {
 
     static _instance: InputManager;
@@ -96,6 +96,7 @@ export default class InputManager {
      * @param down
      */
     public onXKeysKeyDown(keyIndex: number): void {
+        Logger.debug(`XKeys key ${keyIndex} down`);
         const callbacks = this.xKeysKeyDownCallbacks.get(keyIndex);
         if (!callbacks)
             return;
@@ -105,6 +106,7 @@ export default class InputManager {
     }
 
     public onXKeysKeyUp(keyIndex: number): void {
+        Logger.debug(`XKeys key ${keyIndex} up`);
         const callbacks = this.xKeysKeyDownCallbacks.get(keyIndex);
         if (!callbacks)
             return;
@@ -118,9 +120,19 @@ export default class InputManager {
      * @param joystickIndex
      * @param value
      */
-    public onXKeysJoystick(joystickIndex: number, value: XKeysJoystickValue): void {
+    public onXKeysJoystick(value: XKeysJoystickValue): void {
+        Logger.debug(`XKeys joystick moved to ${JSON.stringify(value)}`);
+        value.x = this.normalize(value.x);
+        value.y = this.normalize(value.y);
         for (const callback of this.xKeysJoystickCallbacks)
-            callback(joystickIndex, value);
+            callback(value);
+    }
+
+    private normalize(value: number, rangeMin = -127, rangeMax = 127): number {
+        // Normalize the value to a range of -1 to 1
+        const normalized = 2 * (value - rangeMin) / (rangeMax - rangeMin) - 1;
+        // Round to 3 decimals
+        return Math.round(normalized * 1000) / 1000;
     }
 
 }

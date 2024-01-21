@@ -31,7 +31,7 @@ export default class XKeysPanel {
 
         this.panel.on('down', keyIndex => this.onDown(keyIndex));
         this.panel.on('up', keyIndex => this.onUp(keyIndex));
-        this.panel.on('joystick', (joystickIndex, value) => this.onJoystickMove(joystickIndex, value));
+        this.panel.on('joystick', (joystickIndex, value) => this.onJoystickMove(value));
     }
 
     public onDisconnect(callback: DisconnectCallback): void {
@@ -47,8 +47,8 @@ export default class XKeysPanel {
     }
 
 
-    private onJoystickMove(joystickIndex: number, value: JoystickValueEmit): void {
-        this.inputManager.onXKeysJoystick(joystickIndex, value);
+    private onJoystickMove(value: JoystickValueEmit): void {
+        this.inputManager.onXKeysJoystick(value);
     }
 
     public getDeviceInfo(): DeviceInfo {

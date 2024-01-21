@@ -3,16 +3,19 @@ import { WebSocket } from "ws";
 import { nanoid } from "nanoid";
 import RemoteXKeysPanel from "../input/xkeys/remote-xkeys-panel.class";
 import { XKeysJoystickValue } from "../input/xkeys/interfaces/xkeys-joystick-value.interface";
-import XKeysConnectionManager from "../input/xkeys/xkeys-manager.class";
+
 
 
 export class Connection {
 
     private socket: ServerSideSocket;
-    panel: RemoteXKeysPanel | undefined;
+    panel: RemoteXKeysPanel | null = null;
 
+    get Socket(): ServerSideSocket {
+        return this.socket;
+    }
 
-    constructor(wsSocket: WebSocket, public readonly id = nanoid(5)) {
+    constructor(wsSocket: WebSocket, public readonly id = nanoid(7)) {
         this.socket = new ServerSideSocket(wsSocket, 'server');
         this.setup();
     }
@@ -22,15 +25,28 @@ export class Connection {
         this.socket.on('socket::close', () => this.onDisconnect());
         
 
-        this.socket.on('client::xkeys-connect', (data: any) => this.onXKeysConnect(data));
-        this.socket.on('client::xkeys-disconnect', () => this.onXKeysDisconnect());
-
-        this.socket.on('client::xkey-keydown', (keyIndex: number) => this.panel?.triggerKeyDown(keyIndex));
-        this.socket.on('client::xkey-keyup', (keyIndex: number) => this.panel?.triggerKeyUp(keyIndex));
+        this.socket.on(
+            'client::xkeys-connect', 
+            (data: any) => this.onXKeysConnect(data)
+        );
 
         this.socket.on(
-            'client::xkey-joystick', 
-            (joystickIndex: number, value: XKeysJoystickValue) => this.panel?.triggerJoystick(joystickIndex, value)
+            'client::xkeys-disconnect', 
+            () => this.onXKeysDisconnect()
+        );
+
+        this.socket.on(
+            'client::xkeys-keydown', 
+            ( { keyIndex }: any) => this.panel?.triggerKeyDown(keyIndex)
+        );
+        this.socket.on(
+            'client::xkeys-keyup', 
+            ( { keyIndex }: any) => this.panel?.triggerKeyUp(keyIndex)
+        );
+
+        this.socket.on(
+            'client::xkeys-joystick', 
+            (value: XKeysJoystickValue) => this.panel?.triggerJoystick(value)
         );
 
         this.socket.on('client::cameragroups-get', () => {
@@ -58,17 +74,23 @@ export class Connection {
         return this.socket.ping();
     }
 
-    private onDisconnect(): void {}
+    private onDisconnect(): void {
+        if (this.panel)
+            this.panel.triggerDisconnect();
+
+        this.socket.close();
+    }
     
     private onXKeysConnect(data: any): void {
         this.panel = new RemoteXKeysPanel(data);
+        this.socket.send('server::xkeys-connect-confirm');
     }
 
     private onXKeysDisconnect(): void {
         if (!this.panel)
             return;
         this.panel.triggerDisconnect();
-        this.panel = undefined;
+        this.panel = null;
     }
 
 }

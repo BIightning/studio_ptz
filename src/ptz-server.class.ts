@@ -1,4 +1,3 @@
-import { autoInjectable, inject, injectable, singleton } from "tsyringe";
 import FrontendServer from "./frontend-server.class";
 import InputManager from "./input/input-manager.class";
 import { Logger } from "./utils/logger.class";
@@ -8,7 +7,6 @@ import { CameraManager } from "./cameras/camera-manager.class";
 /**
 * @author Johannes Franzen
 */
-@autoInjectable()
 export class PtzServer {
     private frontendServer: FrontendServer;
     private inputManager: InputManager;

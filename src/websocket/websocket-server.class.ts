@@ -1,11 +1,8 @@
-import { autoInjectable, singleton } from "tsyringe";
 import { Server as WsServer, WebSocket } from 'ws';
 import * as http from 'http';
-import { ServerSideSocket } from "../../lib/server-side-socket";
 import { Logger } from "../utils/logger.class";
 import { Connection } from "./connection.class";
 
-@autoInjectable()
 export class WebsocketServer {
     private httpServer: http.Server;
     private wsServer: WsServer;
@@ -24,7 +21,9 @@ export class WebsocketServer {
 
         this.wsServer.on('connection', (socket: WebSocket) => {
             this.connections.push(new Connection(socket));
-            Logger.info(`Websocket server: New connection from ${socket.url}`);
+            Logger.info(
+                `Websocket server: New connection established. Total connections: ${this.connections.length}`
+            );
         });
 
         // Start pinging connections to check if they are still alive
@@ -32,7 +31,11 @@ export class WebsocketServer {
             () => this.pingConnections(),
             +process.env.PING_INTERVAL!
         );
+    }
 
+    public broadcast(message: string) {
+        for (const connection of this.connections)
+            connection.Socket.send(message);
     }
 
     private pingConnections() {
@@ -46,8 +49,9 @@ export class WebsocketServer {
                 this.onDisconnect(connection);
     }
 
+
     private onDisconnect(connection: Connection) {
-        Logger.info(`Websocket server: A connection was closed`);
         this.connections.splice(this.connections.indexOf(connection), 1);
+        Logger.info(`Websocket server: A connection was closed. Total connections: ${this.connections.length}`);
     }
 }

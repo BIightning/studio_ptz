@@ -1,14 +1,18 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { WebsocketService } from './services/websocket.service';
+import { XkeysService } from './services/xkeys.service';
+import { ToolbarComponent } from './toolbar/toolbar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, RouterLink, ToolbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'ptz-frontend';
+
+  constructor(private readonly websocketService: WebsocketService) {}
 }
