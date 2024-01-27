@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { ControllerComponent } from './controller/controller.component';
 import { InfoComponent } from './info/info.component';
+import { CameraGroup } from './settings/models/camera-group.class';
+import { CameraGroupComponent } from './settings/camera-group/camera-group.component';
 
 export const routes: Routes = [
     {
@@ -9,7 +11,11 @@ export const routes: Routes = [
     },
     {
         'path': 'settings',
-        loadComponent: () => import('./settings/settings.component').then(c => c.SettingsComponent)
+        loadComponent: () => import('./settings/settings.component').then(c => c.SettingsComponent),
+    },
+    {
+        path: 'camera-group/:id',
+        component: CameraGroupComponent,
     },
     {
         'path': 'info',

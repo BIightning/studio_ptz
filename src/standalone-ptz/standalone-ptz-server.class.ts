@@ -1,13 +1,13 @@
-import FrontendServer from "./frontend-server.class";
-import InputManager from "./input/input-manager.class";
-import { Logger } from "./utils/logger.class";
-import { WebsocketServer } from "./websocket/websocket-server.class";
-import { CameraManager } from "./cameras/camera-manager.class";
+import FrontendServer from "../frontend-server.class";
+import InputManager from "../input/input-manager.class";
+import { Logger } from "../utils/logger.class";
+import { WebsocketServer } from "../websocket/websocket-server.class";
+import { CameraManager } from "../cameras/camera-manager.class";
 
 /**
 * @author Johannes Franzen
 */
-export class PtzServer {
+export class StandalonePtzServer {
     private frontendServer: FrontendServer;
     private inputManager: InputManager;
     private websocketServer: WebsocketServer;

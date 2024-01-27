@@ -1,6 +1,5 @@
 import fs from 'fs';
 import chalk from 'chalk';
-import { singleton } from 'tsyringe';
 
 export enum LogLevel {
     ERROR = 'error',
@@ -11,7 +10,6 @@ export enum LogLevel {
 /**
  *A simple Logger class for logging to console and file.
  */
-@singleton()
 export class Logger {
 
     constructor() {
@@ -88,7 +86,7 @@ export class Logger {
     private static logToFile(message: string, level: LogLevel): void { 
         fs.appendFile(
             process.env.LOG_PATH!,
-            `[${new Date().toISOString()}] [${level.toUpperCase()}] ${message}`,
+            `[${new Date().toISOString()}] [${level.toUpperCase()}] ${message}\n`,
             err => { if (err) console.error(err); }
         );
     }

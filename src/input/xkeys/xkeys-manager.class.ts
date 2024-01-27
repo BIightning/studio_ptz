@@ -24,6 +24,7 @@ export default class XKeysConnectionManager {
 
         this.setupWatcher();
     }
+    
 
     private setupWatcher() {
         this.watcher = new XKeysWatcher();
@@ -31,10 +32,12 @@ export default class XKeysConnectionManager {
         this.watcher.on('error', err => console.error(err));
     }
 
+
     private onLocalConnected(panel: XKeys): void {
         Logger.info(`XKeys panel connected: "${panel._getDeviceInfo().product}"`);
         this.panels.push(new XKeysPanel(panel));
     }
+
     
     public static onRemoteConnected(panel: RemoteXKeysPanel) {
         Logger.info(`Remote XKeys panel connected: "${panel.product}"`);
@@ -47,6 +50,7 @@ export default class XKeysConnectionManager {
         Logger.info(`Local XKeys panel disconnected: "${panel.getDeviceInfo().product}"`);
         this.instance.panels = this.instance.panels.filter(p => p !== panel);
     }
+
 
     public static onRemoteDisconnected(panel: RemoteXKeysPanel) {
         Logger.info(`Remote XKeys panel disconnected: "${panel.product}"`);

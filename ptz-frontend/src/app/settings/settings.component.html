@@ -1,1 +1,22 @@
-<p>settings works!</p>
+<div class="wrapper">
+    <h4 class="title">Kameragruppen</h4>
+    @for(group of cameraGroups; track group) {
+    <div class="group" (click)="onGroupClick(group)">
+        <h5 class="group-title">{{group.name}} <small>({{ group.cameras.length}} Kameras)</small></h5>
+    </div>
+    }
+    @empty {
+    <p>Keine Gruppen vorhanden.</p>
+    }
+    <button class="add-group-btn" (click)="addDialog.showModal()">Gruppe hinzufügen</button>
+
+</div>
+
+
+<dialog #addDialog>
+    <h3>Gruppe hinzufügen</h3>
+    <input type="text" [(ngModel)]="newGroupName" placeholder="Gruppenname">
+    <button (click)="addGroup(); addDialog.close()">Hinzufügen</button>
+    &nbsp;
+     <button class="danger" (click)="addDialog.close()">Abbrechen</button>
+</dialog>

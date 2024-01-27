@@ -1,5 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import 'ngx-toastr/toastr';
+
 * {
     box-sizing: border-box;
 }
@@ -18,3 +20,112 @@ html, body {
     max-height: 100%;
     overflow: hidden;
 }
+
+.title {
+    border-bottom: 4px solid #ffffff36;
+    margin: 0;
+}
+
+dialog {
+    color: #fff;
+    background: #222;
+    border-radius: 15px;
+    border: 1px solid #ffffff36;
+    
+    animation: fadeInUp 0.3s ease-in-out forwards;
+
+    input {
+        width: 98%;
+        padding: 12px;
+        border: none;
+        border-bottom: 4px solid rgba(255, 255, 255, 0.23);
+        outline: none;
+        background-color: rgba(22, 22, 22, 0);
+        color: rgb(255, 255, 255);
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+        margin-bottom: 20px;
+    }
+}
+
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(120px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
+
+button {
+    border-radius: 5px;
+    padding: 12px;
+    border: 1px solid rgb(46, 46, 46);
+    background-color: rgb(0, 57, 107);
+    color: rgb(255, 255, 255);
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+
+
+    &.success {
+        background-color: rgb(43, 101, 1);
+        color: rgb(255, 255, 255);
+    }
+
+    &.danger {
+        background-color: rgb(101, 1, 1);
+        color: rgb(255, 255, 255);
+    }
+
+    &.warning {
+        background-color: rgb(101, 101, 1);
+        color: rgb(255, 255, 255);
+    }
+
+    &:hover {
+        cursor: pointer;
+        background-color: rgb(1, 100, 133);
+        color: rgb(255, 255, 255);
+    }
+
+    &.success:hover {
+        background-color: rgb(55, 131, 1);
+        color: rgb(255, 255, 255);
+    }
+
+    &.danger:hover {
+        background-color: rgb(141, 0, 0);
+        color: rgb(255, 255, 255);
+    }
+
+    &.warning:hover {
+        background-color: rgb(154, 154, 0);
+        color: rgb(255, 255, 255);
+    }
+    
+}
+
+
+.toast-container .ngx-toastr {
+    box-shadow: none;
+    backdrop-filter: blur(5px);
+}
+
+.toast-success {
+    background-color: #51A35155;
+  }
+  .toast-error {
+    background-color: #BD362F55;
+  }
+  .toast-info {
+    background-color: #2F96B455;
+  }
+  .toast-warning {
+    background-color: #F8940655;
+  }

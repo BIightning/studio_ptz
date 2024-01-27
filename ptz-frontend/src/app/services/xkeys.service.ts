@@ -118,5 +118,14 @@ export class XkeysService {
 
     this.currentXkeys.on('error', (err: any) => console.error(err));
 
+
+    this.websocketService.on('server::set-key-color', (data: any) => {
+      if (!this.currentXkeys)
+        return;
+
+      this.currentXkeys.setBacklight(data.keyIndex, data.color);
+    });
+
+    
   }
 }

@@ -3,6 +3,8 @@ import { WebSocket } from "ws";
 import { nanoid } from "nanoid";
 import RemoteXKeysPanel from "../input/xkeys/remote-xkeys-panel.class";
 import { XKeysJoystickValue } from "../input/xkeys/interfaces/xkeys-joystick-value.interface";
+import { CameraManager } from "../cameras/camera-manager.class";
+import { CreateCameraGroupDto } from "../cameras/interfaces/create-camera-group.dto";
 
 
 
@@ -50,11 +52,23 @@ export class Connection {
         );
 
         this.socket.on('client::cameragroups-get', () => {
-                
+            const groups = CameraManager.instance.getCameraGroups();
+            this.socket.send('server::cameragroups-get', groups);
         });
 
-        this.socket.on('client::cameragroup-create', (data: any) => { 
-            //todo: implement
+        this.socket.on('client::cameragroup-create', (data: CreateCameraGroupDto) => { 
+            try {
+                CameraManager.instance.createCameraGroup(data.name);
+                this.socket.send('server::cameragroup-create-response', {
+                    success: true,
+                    message: 'CAM_GROUP_CREATED'
+                });
+            } catch (error: any) {
+                this.socket.send('server::cameragroup-create-response', {
+                    success: false,
+                    message: error.message
+                });
+            }
         });
 
         this.socket.on('client::cameragroup-update', (data: any) => {

@@ -1,0 +1,24 @@
+<div class="wrapper">
+    @if(cameraGroup) {
+        <h4 class="title">Kameragruppe "{{cameraGroup.name}}"</h4>
+        
+        @for(camera of cameraGroup.cameras; track camera) {
+            <div class="camera" [collapse]="true">
+                
+            </div>
+        }
+        @empty {
+            <p>Keine Kameras vorhanden.</p>
+        }
+        <button class="add-camera-btn" (click)="addDialog.showModal()">Kamera hinzufügen</button>
+    }
+</div>
+
+<dialog #addDialog>
+    <h4 class="title">Kamera hinzufügen</h4>
+    <br>
+    <input type="text" [(ngModel)]="newCameraName" placeholder="Kamera Name">
+    <button (click)="addCamera(); addDialog.close()">Hinzufügen</button>
+    &nbsp;
+    <button class="danger" (click)="addDialog.close()">Abbrechen</button>
+</dialog>

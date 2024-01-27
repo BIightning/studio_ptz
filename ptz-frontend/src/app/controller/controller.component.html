@@ -3,12 +3,13 @@
     @if(bXkeysConnected) {
         <div class="container">
             <img class="connected" src="assets/images/xk-12.png" alt="Connected">
-            <h4 class="connected-text"> {{deviceInfo?.product}}</h4>
+            <h4 class="connected-text"> {{deviceInfo?.product}} verbunden</h4>
         </div>
     }
 
     @else {
-        <button class="connect-btn" (click)="connect()">Connect</button>
+        <p>Kein Eingabegerät aktiv.</p>
+        <button class="connect-btn" (click)="connect()">Verbinden</button>
     }
 
 </div>

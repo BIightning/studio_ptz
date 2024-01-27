@@ -3,7 +3,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "target": "es2015",
-    "module": "commonjs",
+    "module": "NodeNext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     /* module interop */
