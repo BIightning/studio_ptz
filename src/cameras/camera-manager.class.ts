@@ -55,10 +55,6 @@ export class CameraManager {
     }
     
     
-    
-    
-    
-    
     private readCameraGroupsFromDisk(): void {
         try {
             const list = fs.readFileSync('cameras.json', 'utf-8');

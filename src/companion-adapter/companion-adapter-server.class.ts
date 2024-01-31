@@ -28,7 +28,7 @@ export class CompanionAdapterServer {
         this.frontendServer = new FrontendServer();
         this.setup();
         this.joystickDeadZone = +process.env.JOYSTICK_DEAD_ZONE!;
-        Logger.info('CompanionAdapterServer started');
+        Logger.info('CompanionAdapServer started');
     }
 
     private async setup() {
@@ -46,7 +46,7 @@ export class CompanionAdapterServer {
 
         if (x === 0 && y === 0) {
             //If the joystick is in the deadzone, cancel the last movement
-            await this.cancelMovement();
+            this.cancelMovement();
             this.lastDirection = null;
             return;
         }
@@ -79,13 +79,13 @@ export class CompanionAdapterServer {
                 this.direction = JoystickDirection.LEFT;
         }
 
-
+        
         //If the direction did not change, we don't need to do anything
         if (this.direction === this.lastDirection)
-            return;
-
-        await this.cancelMovement();
-        await this.sendDirection();
+        return;
+    
+        this.cancelMovement();
+        this.sendDirection();
     }
 
 
