@@ -72,6 +72,10 @@ button {
     font-weight: 600;
     transition: all 0.2s;
 
+    &.broad {
+        min-width: 200px;
+    }
+
 
     &.success {
         background-color: rgb(43, 101, 1);

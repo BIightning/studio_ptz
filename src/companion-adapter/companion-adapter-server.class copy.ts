@@ -1,4 +1,5 @@
-import axios from "axios";
+
+
 import FrontendServer from "../frontend-server.class";
 import InputManager from "../input/input-manager.class";
 import { XKeysJoystickValue } from "../input/xkeys/interfaces/xkeys-joystick-value.interface";
@@ -7,20 +8,17 @@ import { WebsocketServer } from "../websocket/websocket-server.class";
 import { JoystickDirection } from "./josytick-direction.const";
 import { Movement } from "./movement.const";
 import asyncCall from "../utils/async-call.util";
+import axios from "axios";
+import { dir } from "console";
 
 export class CompanionAdapterServer {
-    /* Refs to Frontend & Websocket servers to prevent garbage collection */
     private frontendServer: FrontendServer;
+    private inputManager: InputManager;
     private websocketServer: WebsocketServer;
 
-    private inputManager: InputManager;
-
-
     private readonly joystickDeadZone: number;
-    lastDirection: JoystickDirection | null = null;
-    direction: JoystickDirection | null = null;
-
-    private requestQueue: Promise<any> = Promise.resolve();
+    private lastDirection: JoystickDirection | null = null;
+    private direction: JoystickDirection | null = null;
 
     constructor() {
         this.inputManager = new InputManager();
@@ -39,24 +37,25 @@ export class CompanionAdapterServer {
 
 
     private async onJoyStickSignal(value: { x: number; y: number; }) {
+        // console.log(this.joystickDeadZone)
+        // console.log(value);
         if ( //Check if the joystick is completely in the deadzone
             Math.abs(value.x) <= this.joystickDeadZone &&
             Math.abs(value.y) <= this.joystickDeadZone
         ) {
             //If the joystick is in the deadzone, cancel the last movement
-            await this.cancelMovement();
-            this.lastDirection = null;
+            this.direction = null;
+            await this.cancelMovement(this.lastDirection);
             return;
         }
-        
-        // Treat values within the deadzone as zero (either x or y can still be in the deadzone)
-        let x = Math.abs(value.x) > this.joystickDeadZone ? value.x : 0;
-        let y = Math.abs(value.y) > this.joystickDeadZone ? value.y : 0;
-        
         //Cache the last direction
         this.lastDirection = this.direction;
 
-        if (y > 0) { //Upper half of the joystick
+        // Treat values within the deadzone as zero (either x or y can still be in the deadzone)
+        let x = Math.abs(value.x) > this.joystickDeadZone ? value.x : 0;
+        let y = Math.abs(value.y) > this.joystickDeadZone ? value.y : 0;
+
+        if (y < 0) { //Upper half of the joystick
             if (x > 0)
                 this.direction = JoystickDirection.UPPER_RIGHT;
             else if (x < 0)
@@ -65,7 +64,7 @@ export class CompanionAdapterServer {
                 this.direction = JoystickDirection.UP;
         }
 
-        else if (y < 0) { //Lower half of the joystick
+        else if (y > 0) { //Lower half of the joystick
             if (x > 0)
                 this.direction = JoystickDirection.LOWER_RIGHT;
             else if (x < 0)
@@ -81,22 +80,26 @@ export class CompanionAdapterServer {
                 this.direction = JoystickDirection.LEFT;
         }
 
-
-        //If the direction did not change, we don't need to do anything
-        if (this.direction === this.lastDirection)
+        if(!this.direction)
             return;
 
-        await this.cancelMovement();
+        //If the direction did not change, we don't need to do anything
+        if (this.direction == this.lastDirection)
+            return;
+
+        await this.cancelMovement(this.lastDirection);
         await this.sendDirection();
     }
 
 
-    private async cancelMovement() {
+    private async cancelMovement(JoystickDirection: JoystickDirection | null) {
         if (this.lastDirection === null)
             return;
+        const direction = this.lastDirection;
+        this.lastDirection = null; //Set to null to prevent infinite loop
 
-        Logger.info(`Canceling movement ${this.lastDirection}`);
-        this.runRequest(this.lastDirection, Movement.STOP);
+        Logger.info(`Canceling movement ${direction}`);
+        // await this.doRequest(direction, Movement.STOP);
     }
 
 
@@ -105,21 +108,23 @@ export class CompanionAdapterServer {
             return;
 
         Logger.info(`Sending movement ${this.direction}`);
-        this.runRequest(this.direction, Movement.START);
+        // await this.doRequest(this.direction, Movement.START);
     }
 
 
-    private async runRequest(direction: JoystickDirection, movement: Movement) {
-        const request = `http://${process.env.COMPANION_ADDRESS}/set/custom-variable/${direction}/${movement}`;
+    private async doRequest(direction: JoystickDirection, movement: Movement) {
+        const request = `http://${process.env.COMPANION_ADDRESS}/set/custom-variable/${direction}?value=${movement}`;
 
-        this.addToQueue(() => fetch(request));
+        const { error } = await asyncCall(
+            axios(
+                request,
+                {
+                    method: 'GET',
+                }
+            )
+        );
 
-        // if (error)
-        //     Logger.error(`Failed to send request to Companion: ${error} \nRequest: ${request}`);
+        if (error)
+            Logger.error(`Failed to send request to Companion: ${error} \nRequest: ${request}`);
     }
-
-    private addToQueue(fn: () => Promise<any>) {
-        this.requestQueue = this.requestQueue.then(fn)
-            .catch((error) => Logger.error(`Failed to send request to Companion: ${error}`));
-      }
 }
