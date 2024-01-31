@@ -98,7 +98,7 @@ export class CompanionAdapterServer {
         const direction = this.lastDirection;
         this.lastDirection = null; //Set to null to prevent infinite loop
 
-        Logger.info(`Canceling movement ${direction}`);
+        Logger.debug(`Canceling movement ${direction}`);
         // await this.doRequest(direction, Movement.STOP);
     }
 
@@ -107,7 +107,7 @@ export class CompanionAdapterServer {
         if (this.direction === null)
             return;
 
-        Logger.info(`Sending movement ${this.direction}`);
+        Logger.debug(`Sending movement ${this.direction}`);
         // await this.doRequest(this.direction, Movement.START);
     }
 
