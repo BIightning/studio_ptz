@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { WebsocketService } from './services/websocket.service';
-import { XkeysService } from './services/xkeys.service';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 
 @Component({

@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import dotenv from 'dotenv';
 import { StandalonePtzServer } from "./standalone-ptz/standalone-ptz-server.class";
 import { CompanionAdapterServer } from "./companion-adapter/companion-adapter-server.class";

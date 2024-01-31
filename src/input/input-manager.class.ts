@@ -1,4 +1,3 @@
-import { autoInjectable, singleton } from "tsyringe";
 import XKeysConnectionManager from "./xkeys/xkeys-manager.class";
 import { Logger } from "../utils/logger.class";
 import { XKeysJoystickValue } from "./xkeys/interfaces/xkeys-joystick-value.interface";
