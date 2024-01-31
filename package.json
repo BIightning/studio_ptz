@@ -23,8 +23,6 @@
     "express": "^4.18.2",
     "got": "^14.0.0",
     "nanoid": "^5.0.4",
-    "reflect-metadata": "^0.2.1",
-    "tsyringe": "4.7.0",
     "ws": "^8.16.0",
     "xkeys": "^3.0.1"
   }

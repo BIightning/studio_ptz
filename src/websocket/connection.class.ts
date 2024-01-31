@@ -5,6 +5,7 @@ import RemoteXKeysPanel from "../input/xkeys/remote-xkeys-panel.class";
 import { XKeysJoystickValue } from "../input/xkeys/interfaces/xkeys-joystick-value.interface";
 import { CameraManager } from "../cameras/camera-manager.class";
 import { CreateCameraGroupDto } from "../cameras/interfaces/create-camera-group.dto";
+import InputManager from "../input/input-manager.class";
 
 
 
@@ -32,6 +33,68 @@ export class Connection {
             (data: any) => this.onXKeysConnect(data)
         );
 
+
+        this.socket.on('client::gamepad-connect', () => this.onGamepadConnect());
+
+
+        //UNUSED FOR NOW
+
+        // this.socket.on('client::cameragroups-get', () => {
+        //     const groups = CameraManager.instance.getCameraGroups();
+        //     this.socket.send('server::cameragroups-get', groups);
+        // });
+
+        // this.socket.on('client::cameragroup-create', (data: CreateCameraGroupDto) => { 
+        //     try {
+        //         CameraManager.instance.createCameraGroup(data.name);
+        //         this.socket.send('server::cameragroup-create-response', {
+        //             success: true,
+        //             message: 'CAM_GROUP_CREATED'
+        //         });
+        //     } catch (error: any) {
+        //         this.socket.send('server::cameragroup-create-response', {
+        //             success: false,
+        //             message: error.message
+        //         });
+        //     }
+        // });
+
+        // this.socket.on('client::cameragroup-update', (data: any) => {
+
+        // });
+
+        // this.socket.on('client::cameragroup-delete', (data: any) => {
+
+        // });
+
+        // this.socket.on('client::cameragroup-select', (data: any) => {
+            
+        // });
+    }
+
+
+    public ping(): boolean {
+        return this.socket.ping();
+    }
+
+    private onDisconnect(): void {
+        if (this.panel)
+            this.panel.triggerDisconnect();
+
+        this.socket.close();
+    }
+
+    private onGamepadConnect() {
+        this.socket.on(
+            'client::gamepad-joystick',
+            (data: {x: number, y: number}) => InputManager.instance.onGamepadJoystick(data)
+        );
+
+        this.socket.send('server::gamepad-connect-confirm');
+    }
+    
+    private onXKeysConnect(data: any): void {
+        this.panel = new RemoteXKeysPanel(data);
         this.socket.on(
             'client::xkeys-disconnect', 
             () => this.onXKeysDisconnect()
@@ -51,58 +114,18 @@ export class Connection {
             (value: XKeysJoystickValue) => this.panel?.triggerJoystick(value)
         );
 
-        this.socket.on('client::cameragroups-get', () => {
-            const groups = CameraManager.instance.getCameraGroups();
-            this.socket.send('server::cameragroups-get', groups);
-        });
-
-        this.socket.on('client::cameragroup-create', (data: CreateCameraGroupDto) => { 
-            try {
-                CameraManager.instance.createCameraGroup(data.name);
-                this.socket.send('server::cameragroup-create-response', {
-                    success: true,
-                    message: 'CAM_GROUP_CREATED'
-                });
-            } catch (error: any) {
-                this.socket.send('server::cameragroup-create-response', {
-                    success: false,
-                    message: error.message
-                });
-            }
-        });
-
-        this.socket.on('client::cameragroup-update', (data: any) => {
-
-        });
-
-        this.socket.on('client::cameragroup-delete', (data: any) => {
-
-        });
-
-        this.socket.on('client::cameragroup-select', (data: any) => {
-            
-        });
-    }
-
-    public ping(): boolean {
-        return this.socket.ping();
-    }
-
-    private onDisconnect(): void {
-        if (this.panel)
-            this.panel.triggerDisconnect();
-
-        this.socket.close();
-    }
-    
-    private onXKeysConnect(data: any): void {
-        this.panel = new RemoteXKeysPanel(data);
         this.socket.send('server::xkeys-connect-confirm');
     }
 
     private onXKeysDisconnect(): void {
         if (!this.panel)
             return;
+
+        this.socket.unbind('client::xkeys-disconnect');
+        this.socket.unbind('client::xkeys-keydown');
+        this.socket.unbind('client::xkeys-keyup');
+        this.socket.unbind('client::xkeys-joystick');
+        
         this.panel.triggerDisconnect();
         this.panel = null;
     }

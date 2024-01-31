@@ -7,7 +7,7 @@ dotenv.config();
 
 
 //StandAlonePTZ. This is the main entry point for the standalone PTZ server. INCOMPLETE!
-//const ptzServer = new StandalonePtzServer();
+// const ptzServer = new StandalonePtzServer();
 
 
 

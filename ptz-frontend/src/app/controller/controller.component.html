@@ -1,15 +1,23 @@
 <div class="wrapper">
 
-    @if(bXkeysConnected) {
+    @if(bXkeysConnected && !bGamePadConnected) {
         <div class="container">
             <img class="connected" src="assets/images/xk-12.png" alt="Connected">
             <h4 class="connected-text"> {{deviceInfo?.product}} verbunden</h4>
         </div>
     }
 
+    @else if(bGamePadConnected) {
+        <div class="container">
+            <img class="connected" src="assets/images/gamepad.png" alt="Connected">
+            <h4 class="connected-text"> Gamepad verbunden</h4>
+        </div>
+    }
+
     @else {
         <p>Kein Eingabegerät aktiv.</p>
-        <button class="connect-btn" (click)="connect()">Verbinden</button>
+        <button class="connect-btn" (click)="connectXkeys()">&nbsp;&nbsp;&nbsp;xKeys Verbinden&nbsp;&nbsp;&nbsp;</button><br>
+        <button class="connect-btn" (click)="connectGamePad()">Gamepad Verbinden</button>
     }
 
 </div>

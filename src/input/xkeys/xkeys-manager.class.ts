@@ -27,9 +27,9 @@ export default class XKeysConnectionManager {
     
 
     private setupWatcher() {
-        this.watcher = new XKeysWatcher();
-        this.watcher.on('connected', panel => this.onLocalConnected(panel));
-        this.watcher.on('error', err => console.error(err));
+        // this.watcher = new XKeysWatcher();
+        // this.watcher.on('connected', panel => this.onLocalConnected(panel));
+        // this.watcher.on('error', err => console.error(err));
     }
 
 

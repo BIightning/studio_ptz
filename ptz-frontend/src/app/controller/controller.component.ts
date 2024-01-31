@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { XkeysService } from '../services/xkeys.service';
 import { Subscription } from 'rxjs';
 import { DeviceInfo } from '../models/device-info.interface';
+import { GamepadService } from '../services/gamepad.service';
 
 @Component({
   selector: 'app-controller',
@@ -10,12 +11,19 @@ import { DeviceInfo } from '../models/device-info.interface';
   templateUrl: './controller.component.html',
   styleUrl: './controller.component.scss'
 })
-export class ControllerComponent {
-  xkeysConnectedSub: Subscription | null = null;
+export class ControllerComponent implements OnInit, OnDestroy {
+
   bXkeysConnected: boolean = false;
+  bGamePadConnected: boolean = false;
   deviceInfo: DeviceInfo | undefined;
 
-  constructor(private readonly xkeysService: XkeysService) {}
+  gamepadConnectedSub: Subscription | null = null;
+  xkeysConnectedSub: Subscription | null = null;
+
+  constructor(
+    private readonly xkeysService: XkeysService,
+    private readonly gamepadService: GamepadService
+  ) {}
 
   ngOnInit() {
     this.xkeysConnectedSub = this.xkeysService.xkeysConnected$
@@ -23,9 +31,21 @@ export class ControllerComponent {
         this.bXkeysConnected = bConnected;
         this.deviceInfo = this.xkeysService.deviceInfo;
       });
+
+    this.gamepadConnectedSub = this.gamepadService.gamepadConnectStatus
+      .subscribe((bConnected) => this.bGamePadConnected = bConnected);
+  }
+
+  ngOnDestroy() {
+    this.xkeysConnectedSub?.unsubscribe();
+    this.gamepadConnectedSub?.unsubscribe();
   }
     
-  connect() {
+  connectXkeys() {
     this.xkeysService.setup();
+  }
+
+  connectGamePad() {
+    this.gamepadService.setupGamepad();
   }
 }

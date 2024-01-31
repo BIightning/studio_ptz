@@ -4,10 +4,12 @@ import { Logger } from "../utils/logger.class";
 import { XKeysJoystickValue } from "./xkeys/interfaces/xkeys-joystick-value.interface";
 
 type KeyCallback = () => void;
-type JoystickCallback = (value: XKeysJoystickValue) => void;
+type XkeysJoystickCallback = (value: XKeysJoystickValue) => void;
+type GenericJoystickCallback = (value: { x: number; y: number; }) => void;
 
 
 export default class InputManager {
+
 
     static _instance: InputManager;
 
@@ -15,7 +17,10 @@ export default class InputManager {
 
     private xKeysKeyDownCallbacks: Map<number, KeyCallback[]> = new Map();
     private xKeysKeyUpCallbacks: Map<number, KeyCallback[]> = new Map();
-    private xKeysJoystickCallbacks: Array<JoystickCallback> = [];
+
+
+    private xKeysJoystickCallbacks: Array<XkeysJoystickCallback> = [];
+    private genericJoystickCallbacks: Array<GenericJoystickCallback> = [];
     
     public static get instance(): InputManager {
         return InputManager._instance;
@@ -61,7 +66,7 @@ export default class InputManager {
      * Register a callback for all joystick movements on a XKeys panel.
      * @param callback 
      */
-    public registerXKeysJoystickCallback(callback: JoystickCallback): void {
+    public registerXKeysJoystickCallback(callback: XkeysJoystickCallback): void {
         this.xKeysJoystickCallbacks.push(callback);
     }
 
@@ -85,8 +90,17 @@ export default class InputManager {
      * Unregister a callback for all joystick movements on a XKeys panel.
      * @param callback 
      */
-    public unregisterXKeysJoystickCallback(callback: JoystickCallback): void {
+    public unregisterXKeysJoystickCallback(callback: XkeysJoystickCallback): void {
         this.xKeysJoystickCallbacks = this.xKeysJoystickCallbacks.filter(c => c !== callback);
+    }
+
+
+    public registerGenericJoystickCallback(callback: GenericJoystickCallback): void {
+        this.genericJoystickCallbacks.push(callback);
+    }
+
+    public unregisterGenericJoystickCallback(callback: GenericJoystickCallback): void {
+        this.genericJoystickCallbacks = this.genericJoystickCallbacks.filter(c => c !== callback);
     }
 
 
@@ -126,6 +140,16 @@ export default class InputManager {
         value.y = this.normalize(value.y);
         for (const callback of this.xKeysJoystickCallbacks)
             callback(value);
+
+        for (const callback of this.genericJoystickCallbacks)
+            callback({ x: value.x, y: -value.y });
+    }
+
+    public onGamepadJoystick(data: { x: number; y: number; }) {
+        Logger.debug(`Gamepad joystick moved to ${JSON.stringify(data)}`);
+
+        for (const callback of this.genericJoystickCallbacks)
+            callback(data);
     }
 
     private normalize(value: number, rangeMin = -127, rangeMax = 127): number {
