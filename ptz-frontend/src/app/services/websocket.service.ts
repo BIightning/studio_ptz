@@ -11,7 +11,7 @@ export class WebsocketService {
   socket: WebSocketClient;
 
   constructor() {
-    this.socket = new WebSocketClient('ws://localhost:7777');
+    this.socket = new WebSocketClient('ws://192.168.0.64:7777');
   }
 
   // public abstract connect(): void | Promise<void>
