@@ -28,7 +28,7 @@ export class CompanionAdapterServer {
         this.frontendServer = new FrontendServer();
         this.setup();
         this.joystickDeadZone = +process.env.JOYSTICK_DEAD_ZONE!;
-        Logger.info('CompanionPassThroughServer started');
+        Logger.info('CompanionAdapterServer started');
     }
 
     private async setup() {
