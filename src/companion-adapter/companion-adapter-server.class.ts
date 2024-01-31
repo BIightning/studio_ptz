@@ -39,24 +39,22 @@ export class CompanionAdapterServer {
 
 
     private async onJoyStickSignal(value: { x: number; y: number; }) {
-        if ( //Check if the joystick is completely in the deadzone
-            Math.abs(value.x) <= this.joystickDeadZone &&
-            Math.abs(value.y) <= this.joystickDeadZone
-        ) {
+
+        // Treat values within the deadzone as zero (either x or y can still be in the deadzone)
+        let x = Math.abs(value.x) > this.joystickDeadZone ? value.x : 0;
+        let y = Math.abs(value.y) > this.joystickDeadZone ? value.y : 0;
+
+        if (x === 0 && y === 0) {
             //If the joystick is in the deadzone, cancel the last movement
             await this.cancelMovement();
             this.lastDirection = null;
             return;
         }
-        
-        // Treat values within the deadzone as zero (either x or y can still be in the deadzone)
-        let x = Math.abs(value.x) > this.joystickDeadZone ? value.x : 0;
-        let y = Math.abs(value.y) > this.joystickDeadZone ? value.y : 0;
-        
+
         //Cache the last direction
         this.lastDirection = this.direction;
 
-        if (y > 0) { //Upper half of the joystick
+        if (y < 0) { //Upper half of the joystick
             if (x > 0)
                 this.direction = JoystickDirection.UPPER_RIGHT;
             else if (x < 0)
@@ -65,7 +63,7 @@ export class CompanionAdapterServer {
                 this.direction = JoystickDirection.UP;
         }
 
-        else if (y < 0) { //Lower half of the joystick
+        else if (y > 0) { //Lower half of the joystick
             if (x > 0)
                 this.direction = JoystickDirection.LOWER_RIGHT;
             else if (x < 0)
@@ -113,13 +111,10 @@ export class CompanionAdapterServer {
         const request = `http://${process.env.COMPANION_ADDRESS}/set/custom-variable/${direction}/${movement}`;
 
         this.addToQueue(() => fetch(request));
-
-        // if (error)
-        //     Logger.error(`Failed to send request to Companion: ${error} \nRequest: ${request}`);
     }
 
     private addToQueue(fn: () => Promise<any>) {
         this.requestQueue = this.requestQueue.then(fn)
             .catch((error) => Logger.error(`Failed to send request to Companion: ${error}`));
-      }
+    }
 }
